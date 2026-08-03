@@ -286,7 +286,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
         </svg>
       </div>
 
-      <div className="grid grid-cols-10 gap-px relative z-10">{cells}</div>
+      <div ref={gridRef} className="grid grid-cols-10 gap-px relative z-10">{cells}</div>
     </div>
   )
 }
