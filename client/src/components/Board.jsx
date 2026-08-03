@@ -79,6 +79,8 @@ export default function Board({ players = [], animatedPositions = {} }) {
   }))
   const containerRef = useRef(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
+  const gridRef = useRef(null)
+  const [cellCenters, setCellCenters] = useState({})
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -86,10 +88,45 @@ export default function Board({ players = [], animatedPositions = {} }) {
     const ro = new ResizeObserver(() => {
       const rect = el.getBoundingClientRect()
       setSize({ width: Math.max(0, rect.width), height: Math.max(0, rect.height) })
+      // recompute cell centers when resize happens
+      if (gridRef.current) {
+        const children = Array.from(gridRef.current.children)
+        const containerRect = el.getBoundingClientRect()
+        const centers = {}
+        children.forEach((child, idx) => {
+          const r = child.getBoundingClientRect()
+          const left = r.left - containerRect.left
+          const top = r.top - containerRect.top
+          const cx = left + r.width / 2
+          const cy = top + r.height / 2
+          const row = 9 - Math.floor(idx / 10)
+          const col = idx % 10
+          const number = displayNumber(row, col)
+          centers[number] = { x: cx, y: cy, w: r.width, h: r.height }
+        })
+        setCellCenters(centers)
+      }
     })
     ro.observe(el)
     const rect = el.getBoundingClientRect()
     setSize({ width: Math.max(0, rect.width), height: Math.max(0, rect.height) })
+    if (gridRef.current) {
+      const children = Array.from(gridRef.current.children)
+      const containerRect = el.getBoundingClientRect()
+      const centers = {}
+      children.forEach((child, idx) => {
+        const r = child.getBoundingClientRect()
+        const left = r.left - containerRect.left
+        const top = r.top - containerRect.top
+        const cx = left + r.width / 2
+        const cy = top + r.height / 2
+        const row = 9 - Math.floor(idx / 10)
+        const col = idx % 10
+        const number = displayNumber(row, col)
+        centers[number] = { x: cx, y: cy, w: r.width, h: r.height }
+      })
+      setCellCenters(centers)
+    }
     return () => ro.disconnect()
   }, [containerRef])
   for (let row = 9; row >= 0; row--) {
@@ -164,9 +201,9 @@ export default function Board({ players = [], animatedPositions = {} }) {
 
               return (
                 <>
-                  {snakePaths.map(({ start, end }) => {
-                    const source = squareCenter(start, size)
-                    const target = squareCenter(end, size)
+                    {snakePaths.map(({ start, end }) => {
+                      const source = cellCenters[start] ?? squareCenter(start, size)
+                      const target = cellCenters[end] ?? squareCenter(end, size)
                     return (
                       <g key={`snake-${start}`} opacity="0.5">
                         <path
@@ -191,9 +228,11 @@ export default function Board({ players = [], animatedPositions = {} }) {
                   })}
 
                   {ladderPaths.map(({ start, end }) => {
-                    const source = squareCenter(start, size)
-                    const target = squareCenter(end, size)
-                    const rails = ladderRails(source, target, unitScale)
+                    const source = cellCenters[start] ?? squareCenter(start, size)
+                    const target = cellCenters[end] ?? squareCenter(end, size)
+                    const cellW = (size.width - (1 * 9)) / 10 || 11
+                    const unitScaleLocal = (cellCenters[start]?.w ?? cellW) / 11 || 1
+                    const rails = ladderRails(source, target, unitScaleLocal)
                     const rungCount = rails.rungCount
 
                     return (
