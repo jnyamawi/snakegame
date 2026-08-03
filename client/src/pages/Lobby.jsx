@@ -14,6 +14,7 @@ import PlayerList from '../components/PlayerList'
 import { socket } from '../socket/socket'
 import {
   getPlayer,
+  savePlayer,
   clearPlayer,
 } from '../utils/storage'
 
@@ -36,12 +37,13 @@ export default function Lobby() {
 
   useEffect(() => {
 
-    if (
-      !player ||
-      player.roomId !== roomId
-    ) {
+    if (!player) {
       navigate('/')
       return
+    }
+
+    if (player.roomId !== roomId) {
+      savePlayer({ ...player, roomId })
     }
 
     // CONNECT

@@ -6,7 +6,7 @@ import Board from '../components/Board'
 import Dice from '../components/Dice'
 import PlayerList from '../components/PlayerList'
 import { socket } from '../socket/socket'
-import { getPlayer, clearPlayer } from '../utils/storage'
+import { getPlayer, savePlayer, clearPlayer } from '../utils/storage'
 
 const SNAKES = {
   98: 40,
@@ -115,9 +115,13 @@ export default function Game() {
   }, [])
 
   useEffect(() => {
-    if (!player || player.roomId !== roomId) {
+    if (!player) {
       navigate('/')
       return
+    }
+
+    if (player.roomId !== roomId) {
+      savePlayer({ ...player, roomId })
     }
 
     const onConnect = () => {
@@ -210,6 +214,7 @@ export default function Game() {
   if (!room) return <div className="grid min-h-screen place-items-center text-slate-400">Loading game…</div>
 
   const winner = room.players.find((p) => p.id === room.winner)
+  const sortedPlayers = [...room.players].sort((a, b) => (b.wins ?? 0) - (a.wins ?? 0))
 
   return (
     <main className="min-h-screen pb-44 lg:pb-0">
@@ -231,13 +236,33 @@ export default function Game() {
 
           <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-4 backdrop-blur-xl shadow-2xl">
             <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-              <div className={`rounded-2xl p-4 text-center ${isMyTurn ? 'bg-indigo-500/15 ring-1 ring-indigo-400/20' : 'bg-white/[.03]'}`}>
-                <div className="text-xs font-bold uppercase tracking-widest text-slate-500">{isMyTurn ? 'Your turn' : 'Waiting'}</div>
-                <div className="mt-1 text-xl font-black">{isMyTurn ? 'Roll the dice!' : `${room.players.find((p) => p.id === room.currentTurn)?.name}'s turn`}</div>
+              <div className={`rounded-2xl p-4 text-center ${room.status === 'finished' ? 'bg-amber-500/15 ring-1 ring-amber-400/20' : isMyTurn ? 'bg-indigo-500/15 ring-1 ring-indigo-400/20' : 'bg-white/[.03]'}`}>
+                <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  {room.status === 'finished' ? 'Game over' : isMyTurn ? 'Your turn' : 'Waiting'}
+                </div>
+                <div className="mt-1 text-xl font-black">
+                  {room.status === 'finished'
+                    ? `🏆 ${winner?.name ?? 'Player'} wins!`
+                    : isMyTurn
+                      ? 'Roll the dice!'
+                      : `${room.players.find((p) => p.id === room.currentTurn)?.name}'s turn`}
+                </div>
               </div>
-              <div className="mt-6">
-                <Dice value={dice} disabled={!isMyTurn || !connected} onRoll={roll} />
-              </div>
+              {room.status !== 'finished' ? (
+                <div className="mt-6">
+                  <Dice value={dice} disabled={!isMyTurn || !connected} onRoll={roll} />
+                </div>
+              ) : (
+                <div className="mt-6 grid gap-3">
+                  <button
+                    type="button"
+                    onClick={rematch}
+                    className="rounded-2xl bg-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/20"
+                  >
+                    Rematch
+                  </button>
+                </div>
+              )}
               {notice && <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-3 text-center text-sm font-semibold text-amber-200">{notice}</div>}
             </div>
           </div>
@@ -252,6 +277,21 @@ export default function Game() {
               ) : (
                 <span>Turn: <strong className="text-indigo-300">{room.players.find((p) => p.id === room.currentTurn)?.name}</strong></span>
               )}
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/5 bg-slate-900/70 p-4">
+            <div className="text-sm uppercase tracking-widest text-slate-500">Scoreboard</div>
+            <div className="mt-3 space-y-3">
+              {sortedPlayers.map((playerData) => (
+                <div key={playerData.id} className="flex items-center justify-between rounded-2xl bg-white/5 p-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">{playerData.name}</div>
+                    <div className="text-xs text-slate-500">Square {playerData.position}</div>
+                  </div>
+                  <div className="rounded-full bg-slate-800 px-3 py-1 text-sm font-semibold text-emerald-300">{playerData.wins} wins</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>

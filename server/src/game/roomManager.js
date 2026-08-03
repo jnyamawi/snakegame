@@ -66,6 +66,9 @@ export function createRoom(player, maxPlayers = 2) {
       ],
     ]),
 
+    // Player win counts
+    wins: new Map([[player.id, 0]]),
+
     // Last move
     lastMove: null,
   }
@@ -103,6 +106,7 @@ function publicRoom(room) {
         position: player.position,
         host: player.id === room.host,
         connected: player.connected,
+        wins: room.wins.get(player.id) ?? 0,
       })
     ),
 
@@ -142,6 +146,8 @@ export function addPlayer(room, player) {
     position: 0,
     connected: true,
   })
+
+  room.wins.set(player.id, 0)
 }
 
 // RECONNECT PLAYER
@@ -318,6 +324,11 @@ export function playTurn(
     room.winner = player.id
 
     winner = player
+
+    room.wins.set(
+      player.id,
+      (room.wins.get(player.id) ?? 0) + 1,
+    )
   }
 
   // NEXT TURN
