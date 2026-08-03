@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #eef2ff;
+  background: #080b18;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(99,102,241,.16), transparent 28rem),
+    radial-gradient(circle at 85% 80%, rgba(16,185,129,.10), transparent 28rem),
+    #080b18;
+}
+
+button, input { font: inherit; }
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #101426; }
+::-webkit-scrollbar-thumb { background: #303750; border-radius: 999px; }
+
+@keyframes dice-roll {
+  0% { transform: rotate(0) scale(1); }
+  35% { transform: rotate(10deg) scale(1.08); }
+  70% { transform: rotate(-10deg) scale(.96); }
+  100% { transform: rotate(0) scale(1); }
+}
+.dice-roll { animation: dice-roll .55s ease; }
+
+@keyframes token-pop {
+  0% { transform: scale(.65); opacity: .5; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.token-pop { animation: token-pop .35s ease; }
