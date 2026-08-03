@@ -22,8 +22,8 @@ function squareCenter(number) {
   const row = Math.floor((number - 1) / 10)
   const col = row % 2 === 0 ? (number - 1) % 10 : 9 - ((number - 1) % 10)
   return {
-    x: col * 10 + 5,
-    y: (9 - row) * 10 + 5,
+    x: col * 11 + 5,
+    y: (9 - row) * 11 + 5,
   }
 }
 
@@ -80,7 +80,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
           </span>
 
           {snake && (
-            <div className="absolute left-1 top-3 rounded-full bg-rose-500/15 px-1.5 py-0.5 text-[7px] leading-none font-semibold text-rose-200 shadow-sm ring-1 ring-rose-500/20 sm:top-4 sm:px-2 sm:text-[10px]">
+            <div className="absolute left-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/15 px-1 py-0.5 text-[7px] leading-none font-semibold text-rose-200 shadow-sm ring-1 ring-rose-500/20 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[10px]">
               <span className="font-black text-rose-100">S</span>
               <span className="mx-1 text-rose-300">→</span>
               <span className="text-rose-100">{snake}</span>
@@ -88,7 +88,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
           )}
 
           {ladder && (
-            <div className="absolute right-1 top-3 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[7px] leading-none font-semibold text-emerald-200 shadow-sm ring-1 ring-emerald-500/20 sm:top-4 sm:px-2 sm:text-[10px]">
+            <div className="absolute right-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/15 px-1 py-0.5 text-[7px] leading-none font-semibold text-emerald-200 shadow-sm ring-1 ring-emerald-500/20 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[10px]">
               <span className="font-black text-emerald-100">L</span>
               <span className="mx-1 text-emerald-300">→</span>
               <span className="text-emerald-100">{ladder}</span>
@@ -117,7 +117,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto">
       <div className="pointer-events-none absolute inset-0 z-0">
-        <svg viewBox="0 0 100 100" className="h-full w-full">
+        <svg viewBox="0 0 109 109" className="h-full w-full">
           {snakePaths.map(({ start, end }) => {
             const source = squareCenter(start)
             const target = squareCenter(end)

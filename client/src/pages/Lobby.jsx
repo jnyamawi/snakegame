@@ -67,6 +67,10 @@ export default function Lobby() {
     // ROOM STATE
     const onState = (state) => {
       setRoom(state)
+
+      if (state?.status === 'playing') {
+        navigate(`/room/${roomId}/game`)
+      }
     }
 
     // GAME STARTED
