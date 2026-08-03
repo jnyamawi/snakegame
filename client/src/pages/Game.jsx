@@ -212,7 +212,7 @@ export default function Game() {
   const winner = room.players.find((p) => p.id === room.winner)
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pb-44 lg:pb-0">
       <RoomHeader roomId={roomId} />
 
       <div className="mx-auto grid max-w-7xl gap-6 px-3 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_350px]">
@@ -229,6 +229,19 @@ export default function Game() {
 
           <Board players={room.players} animatedPositions={animatedPositions} />
 
+          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-4 backdrop-blur-xl shadow-2xl">
+            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
+              <div className={`rounded-2xl p-4 text-center ${isMyTurn ? 'bg-indigo-500/15 ring-1 ring-indigo-400/20' : 'bg-white/[.03]'}`}>
+                <div className="text-xs font-bold uppercase tracking-widest text-slate-500">{isMyTurn ? 'Your turn' : 'Waiting'}</div>
+                <div className="mt-1 text-xl font-black">{isMyTurn ? 'Roll the dice!' : `${room.players.find((p) => p.id === room.currentTurn)?.name}'s turn`}</div>
+              </div>
+              <div className="mt-6">
+                <Dice value={dice} disabled={!isMyTurn || !connected} onRoll={roll} />
+              </div>
+              {notice && <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-3 text-center text-sm font-semibold text-amber-200">{notice}</div>}
+            </div>
+          </div>
+
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/5 bg-white/[.03] p-4">
             <div className="text-sm text-slate-400">
               <span className="text-slate-500">You:</span> <strong className="text-white">{me?.name}</strong> • Square <strong className="text-white">{me?.position}</strong>
@@ -244,7 +257,7 @@ export default function Game() {
         </section>
 
         <aside className="space-y-5">
-          <div className="rounded-[2rem] border border-white/10 bg-slate-900/70 p-5">
+          <div className="hidden lg:block rounded-[2rem] border border-white/10 bg-slate-900/70 p-5">
             {room.status === 'finished' ? (
               <div className="text-center">
                 <Trophy className="mx-auto text-amber-300" size={48} />
