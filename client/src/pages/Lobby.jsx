@@ -89,6 +89,13 @@ export default function Lobby() {
       setError(message)
     }
 
+    const onRoomClosed = ({ message }) => {
+      if (message) {
+        setError(message)
+      }
+      navigate('/')
+    }
+
     socket.on(
       'connect',
       onConnect
@@ -107,6 +114,11 @@ export default function Lobby() {
     socket.on(
       'game-started',
       onStarted
+    )
+
+    socket.on(
+      'room-closed',
+      onRoomClosed
     )
 
     socket.on(
@@ -153,6 +165,11 @@ export default function Lobby() {
       )
 
       socket.off(
+        'room-closed',
+        onRoomClosed
+      )
+
+      socket.off(
         'room-error',
         onError
       )
@@ -188,6 +205,16 @@ export default function Lobby() {
     clearPlayer()
 
     navigate('/')
+  }
+
+  const closeRoom = () => {
+    socket.emit(
+      'close-room',
+      {
+        roomId,
+        playerId: player.id,
+      }
+    )
   }
 
   // SHARE
@@ -239,7 +266,7 @@ export default function Lobby() {
   return (
     <main className="min-h-screen">
 
-      <RoomHeader roomId={roomId} />
+      <RoomHeader roomId={roomId} isHost={isHost} onClose={closeRoom} />
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_380px]">
 

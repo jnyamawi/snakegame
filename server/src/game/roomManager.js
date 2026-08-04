@@ -224,6 +224,19 @@ export function removePlayer(
   }
 }
 
+// CLOSE ROOM
+export function closeRoom(room, playerId) {
+  if (!room) {
+    throw new Error('Room not found.')
+  }
+
+  if (room.host !== playerId) {
+    throw new Error('Only the host can close this room.')
+  }
+
+  rooms.delete(room.roomId)
+}
+
 // START GAME
 export function startGame(
   room,

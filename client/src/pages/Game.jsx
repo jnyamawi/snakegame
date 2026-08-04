@@ -180,11 +180,20 @@ export default function Game() {
       setTimeout(() => setNotice(''), 3000)
     }
 
+    const onRoomClosed = ({ message }) => {
+      if (message) {
+        setNotice(message)
+      }
+      setTimeout(() => setNotice(''), 3000)
+      navigate('/')
+    }
+
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
     socket.on('room-state', onState)
     socket.on('game-event', onGameEvent)
     socket.on('room-error', onError)
+    socket.on('room-closed', onRoomClosed)
 
     if (!socket.connected) socket.connect()
     else socket.emit('rejoin-room', { roomId, playerId: player.id, name: player.name })
@@ -195,6 +204,7 @@ export default function Game() {
       socket.off('room-state', onState)
       socket.off('game-event', onGameEvent)
       socket.off('room-error', onError)
+      socket.off('room-closed', onRoomClosed)
     }
   }, [roomId])
 
@@ -209,6 +219,11 @@ export default function Game() {
     navigate('/')
   }
 
+  const closeRoom = () => {
+    if (!player) return
+    socket.emit('close-room', { roomId, playerId: player.id })
+  }
+
   const rematch = () => socket.emit('rematch', { roomId, playerId: player.id })
 
   if (!room) return <div className="grid min-h-screen place-items-center text-slate-400">Loading game…</div>
@@ -218,7 +233,7 @@ export default function Game() {
 
   return (
     <main className="min-h-screen pb-44 lg:pb-0">
-      <RoomHeader roomId={roomId} />
+      <RoomHeader roomId={roomId} isHost={player?.id === room.host} onClose={closeRoom} />
 
       <div className="mx-auto grid max-w-7xl gap-6 px-3 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_350px]">
         <section>

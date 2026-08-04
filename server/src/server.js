@@ -11,6 +11,7 @@ import {
   reconnectPlayer,
   disconnectPlayer,
   removePlayer,
+  closeRoom,
   startGame,
   playTurn,
   rematch,
@@ -425,6 +426,38 @@ io.on('connection', (socket) => {
 
       } catch (e) {
 
+        sendError(
+          socket,
+          e.message
+        )
+      }
+    }
+  )
+
+  // =====================================================
+  // CLOSE ROOM
+  // =====================================================
+
+  socket.on(
+    'close-room',
+    ({
+      roomId,
+      playerId,
+    }) => {
+
+      try {
+        const room = getRoom(roomId)
+
+        closeRoom(room, playerId)
+
+        io.to(room.roomId).emit(
+          'room-closed',
+          {
+            roomId: room.roomId,
+            message: 'Host has closed the room.',
+          }
+        )
+      } catch (e) {
         sendError(
           socket,
           e.message
