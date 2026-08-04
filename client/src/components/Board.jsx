@@ -167,25 +167,42 @@ export default function Board({ players = [], animatedPositions = {} }) {
             number % 2 === 0 ? 'bg-white/[.045]' : 'bg-white/[.025]'
           }`}
         >
-          <span className="absolute left-1 top-1 z-30 rounded-full bg-white/90 px-2 py-0.5 text-[8px] font-black text-slate-900 shadow-md border border-slate-300 sm:text-[10px] md:text-[12px]">
-            {number}
-          </span>
+          <div
+    className="
+        absolute
+        top-1
+        left-1
+        z-30
+        flex
+        items-center
+        justify-center
 
-          {snake && (
-            <div className="absolute left-1 bottom-1 z-20 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-rose-100 shadow-sm ring-1 ring-rose-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
-              <span className="font-black text-rose-100">S</span>
-              <span className="mx-1 text-rose-300">→</span>
-              <span className="text-rose-100">{snake}</span>
-            </div>
-          )}
+        w-5
+        h-5
 
-          {ladder && (
-            <div className="absolute right-1 bottom-1 z-20 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-emerald-100 shadow-sm ring-1 ring-emerald-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
-              <span className="font-black text-emerald-100">L</span>
-              <span className="mx-1 text-emerald-300">→</span>
-              <span className="text-emerald-100">{ladder}</span>
-            </div>
-          )}
+        sm:w-6
+        sm:h-6
+
+        rounded-full
+
+        bg-white/90
+
+        border
+        border-slate-300
+
+        shadow-md
+
+        text-[8px]
+        sm:text-[10px]
+
+        font-black
+
+        text-slate-900
+    "
+>
+    {number}
+</div>
+
 
           <div className="relative z-40 flex h-full items-center justify-center gap-0.5 pt-2">
             {occupants.map((player) => {
