@@ -64,11 +64,29 @@ function ladderRails(start, end, unitScale = 1) {
   const lengthUnits = length / (unitScale || 1)
 
   return {
-    left: { x1: start.x + px, y1: start.y + py, x2: end.x + px, y2: end.y + py },
-    right: { x1: start.x - px, y1: start.y - py, x2: end.x - px, y2: end.y - py },
-    rungCount: Math.max(3, Math.min(6, Math.floor(lengthUnits / 8))),
-    vector: { x: ux, y: uy },
-  }
+  left: {
+    x1: start.x + px,
+    y1: start.y + py,
+    x2: end.x + px,
+    y2: end.y + py,
+  },
+
+  right: {
+    x1: start.x - px,
+    y1: start.y - py,
+    x2: end.x - px,
+    y2: end.y - py,
+  },
+
+  rungCount: Math.max(3, Math.min(6, Math.floor(lengthUnits / 8))),
+
+  vector: {
+    x: ux,
+    y: uy,
+  },
+
+  length,
+}
 }
 
 function buildPaths(map) {
@@ -149,12 +167,12 @@ export default function Board({ players = [], animatedPositions = {} }) {
             number % 2 === 0 ? 'bg-white/[.045]' : 'bg-white/[.025]'
           }`}
         >
-          <span className="absolute left-1 top-1 rounded-full bg-slate-950/90 px-2 py-0.5 text-[10px] font-black text-slate-100 shadow-black/40 sm:text-[13px]">
+          <span className="absolute left-1 top-1 z-30 rounded-full bg-white/90 px-2 py-0.5 text-[8px] font-black text-slate-900 shadow-md border border-slate-300 sm:text-[10px] md:text-[12px]">
             {number}
           </span>
 
           {snake && (
-            <div className="absolute left-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-rose-100 shadow-sm ring-1 ring-rose-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
+            <div className="absolute left-1 bottom-1 z-20 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-rose-100 shadow-sm ring-1 ring-rose-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
               <span className="font-black text-rose-100">S</span>
               <span className="mx-1 text-rose-300">→</span>
               <span className="text-rose-100">{snake}</span>
@@ -162,14 +180,14 @@ export default function Board({ players = [], animatedPositions = {} }) {
           )}
 
           {ladder && (
-            <div className="absolute right-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-emerald-100 shadow-sm ring-1 ring-emerald-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
+            <div className="absolute right-1 bottom-1 z-20 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-emerald-100 shadow-sm ring-1 ring-emerald-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
               <span className="font-black text-emerald-100">L</span>
               <span className="mx-1 text-emerald-300">→</span>
               <span className="text-emerald-100">{ladder}</span>
             </div>
           )}
 
-          <div className="flex h-full items-center justify-center gap-0.5 pt-2">
+          <div className="relative z-40 flex h-full items-center justify-center gap-0.5 pt-2">
             {occupants.map((player) => {
               const playerIndex = players.findIndex((p) => p.id === player.id)
               return (
