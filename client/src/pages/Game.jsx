@@ -626,7 +626,13 @@ export default function Game() {
               They are now a normal block BELOW the board.
               ==================================================== */}
 
-          <div className="mobile-controls mt-4 w-full lg:hidden">
+          <div className="
+  mobile-controls
+  lg:hidden
+  relative
+  mt-4
+  w-full
+">
             <div className="rounded-3xl border border-white/10 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="flex items-center justify-between gap-3">
                 {/* TURN INFORMATION */}
