@@ -125,6 +125,14 @@ export default function Board({ players = [], animatedPositions = {} }) {
     displayPosition: animatedPositions[player.id] ?? player.position,
   }))
 
+  const boardWidth = size.width || 320
+  const snakeControlOffset = Math.max(24, boardWidth / 14)
+  const snakeBaseStroke = Math.max(3.5, boardWidth / 130)
+  const snakeGlowStroke = Math.max(8, boardWidth / 40)
+  const ladderRailStroke = Math.max(2.4, boardWidth / 220)
+  const ladderRungStroke = Math.max(1.6, boardWidth / 240)
+  const ladderRungSpacing = Math.max(16, boardWidth / 23)
+
   const cells = []
   for (let row = 9; row >= 0; row--) {
     for (let col = 0; col < 10; col++) {
@@ -140,12 +148,12 @@ export default function Board({ players = [], animatedPositions = {} }) {
             number % 2 === 0 ? 'bg-white/[.045]' : 'bg-white/[.025]'
           }`}
         >
-          <span className="absolute left-1 top-1 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-black text-slate-100 shadow-black/40 sm:text-[12px]">
+          <span className="absolute left-1 top-1 rounded-full bg-slate-950/90 px-2 py-0.5 text-[10px] font-black text-slate-100 shadow-black/40 sm:text-[13px]">
             {number}
           </span>
 
           {snake && (
-            <div className="absolute left-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/15 px-1 py-0.5 text-[7px] leading-none font-semibold text-rose-200 shadow-sm ring-1 ring-rose-500/20 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[10px]">
+            <div className="absolute left-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-rose-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-rose-100 shadow-sm ring-1 ring-rose-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
               <span className="font-black text-rose-100">S</span>
               <span className="mx-1 text-rose-300">→</span>
               <span className="text-rose-100">{snake}</span>
@@ -153,7 +161,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
           )}
 
           {ladder && (
-            <div className="absolute right-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/15 px-1 py-0.5 text-[7px] leading-none font-semibold text-emerald-200 shadow-sm ring-1 ring-emerald-500/20 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[10px]">
+            <div className="absolute right-1 top-1 max-w-[calc(100%-0.5rem)] rounded-full bg-emerald-500/18 px-1 py-0.5 text-[8px] leading-none font-semibold text-emerald-100 shadow-sm ring-1 ring-emerald-500/25 overflow-hidden whitespace-nowrap text-ellipsis sm:top-2 sm:px-2 sm:text-[11px]">
               <span className="font-black text-emerald-100">L</span>
               <span className="mx-1 text-emerald-300">→</span>
               <span className="text-emerald-100">{ladder}</span>
@@ -182,12 +190,11 @@ export default function Board({ players = [], animatedPositions = {} }) {
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
+      className="relative overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
       style={{
-        width: 'min(100%, calc(100vh - 18rem))',
-        height: 'min(100vw, calc(100vh - 18rem))',
+        width: 'min(100%, 780px)',
+        maxHeight: 'calc(100vh - 14rem)',
         maxWidth: '780px',
-        maxHeight: '780px',
         boxSizing: 'border-box',
       }}
     >
@@ -196,26 +203,25 @@ export default function Board({ players = [], animatedPositions = {} }) {
           {snakePaths.map(({ start, end }) => {
             const source = cellCenters[start] ?? squareCenter(start, size)
             const target = cellCenters[end] ?? squareCenter(end, size)
-            const controlOffset = Math.max(24, (size.width || 180) / 18)
             return (
-              <g key={`snake-${start}`} opacity="0.85">
+              <g key={`snake-${start}`} opacity="0.95">
                 <path
-                  d={`M ${source.x} ${source.y} C ${source.x} ${source.y + controlOffset} ${target.x} ${target.y - controlOffset} ${target.x} ${target.y}`}
+                  d={`M ${source.x} ${source.y} C ${source.x} ${source.y + snakeControlOffset} ${target.x} ${target.y - snakeControlOffset} ${target.x} ${target.y}`}
                   stroke="#fb7185"
-                  strokeWidth="10"
+                  strokeWidth={snakeGlowStroke}
                   fill="none"
                   strokeLinecap="round"
-                  opacity="0.14"
+                  opacity="0.18"
                 />
                 <path
-                  d={`M ${source.x} ${source.y} C ${source.x} ${source.y + controlOffset} ${target.x} ${target.y - controlOffset} ${target.x} ${target.y}`}
+                  d={`M ${source.x} ${source.y} C ${source.x} ${source.y + snakeControlOffset} ${target.x} ${target.y - snakeControlOffset} ${target.x} ${target.y}`}
                   stroke="#fb7185"
-                  strokeWidth="3.4"
+                  strokeWidth={snakeBaseStroke}
                   fill="none"
                   strokeLinecap="round"
                 />
-                <circle cx={source.x} cy={source.y} r="3" fill="#fb7185" />
-                <circle cx={target.x} cy={target.y} r="1.8" fill="#fb7185" />
+                <circle cx={source.x} cy={source.y} r={snakeBaseStroke * 0.9} fill="#fb7185" />
+                <circle cx={target.x} cy={target.y} r={snakeBaseStroke * 0.6} fill="#fb7185" />
               </g>
             )
           })}
@@ -225,14 +231,14 @@ export default function Board({ players = [], animatedPositions = {} }) {
             const target = cellCenters[end] ?? squareCenter(end, size)
             const rails = ladderRails(source, target)
             return (
-              <g key={`ladder-${start}`} opacity="0.95">
+              <g key={`ladder-${start}`} opacity="0.98">
                 <line
                   x1={rails.left.x1}
                   y1={rails.left.y1}
                   x2={rails.left.x2}
                   y2={rails.left.y2}
                   stroke="#34d399"
-                  strokeWidth="2.4"
+                  strokeWidth={ladderRailStroke}
                   strokeLinecap="round"
                 />
                 <line
@@ -241,15 +247,15 @@ export default function Board({ players = [], animatedPositions = {} }) {
                   x2={rails.right.x2}
                   y2={rails.right.y2}
                   stroke="#34d399"
-                  strokeWidth="2.4"
+                  strokeWidth={ladderRailStroke}
                   strokeLinecap="round"
                 />
                 {Array.from({ length: rails.rungCount }).map((_, index) => {
                   const t = (index + 1) / (rails.rungCount + 1)
-                  const x = source.x + rails.vector.x * 16 * t
-                  const y = source.y + rails.vector.y * 16 * t
-                  const rx = -rails.vector.y * 3.4
-                  const ry = rails.vector.x * 3.4
+                  const x = source.x + rails.vector.x * ladderRungSpacing * t
+                  const y = source.y + rails.vector.y * ladderRungSpacing * t
+                  const rx = -rails.vector.y * (ladderRungStroke * 2.1)
+                  const ry = rails.vector.x * (ladderRungStroke * 2.1)
                   return (
                     <line
                       key={index}
@@ -258,13 +264,13 @@ export default function Board({ players = [], animatedPositions = {} }) {
                       x2={x + rx}
                       y2={y + ry}
                       stroke="#34d399"
-                      strokeWidth="1.6"
+                      strokeWidth={ladderRungStroke}
                       strokeLinecap="round"
                     />
                   )
                 })}
-                <circle cx={source.x} cy={source.y} r="2.4" fill="#34d399" />
-                <circle cx={target.x} cy={target.y} r="1.6" fill="#34d399" />
+                <circle cx={source.x} cy={source.y} r={ladderRailStroke * 1.1} fill="#34d399" />
+                <circle cx={target.x} cy={target.y} r={ladderRailStroke * 0.9} fill="#34d399" />
               </g>
             )
           })}
