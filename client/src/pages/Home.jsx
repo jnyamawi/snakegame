@@ -140,7 +140,7 @@ export default function Home() {
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
               Create a private room, choose how many friends can join,
-              share the room code, and battle your way to square 100.
+              share the room code with your friendsand battle your way to square 100.
             </p>
 
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
@@ -181,7 +181,7 @@ export default function Home() {
               onChange={(e) =>
                 setName(e.target.value.slice(0, 18))
               }
-              placeholder="e.g. Joseph"
+              placeholder="e.g. Mwamuye"
               className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none transition focus:border-indigo-400"
             />
 
