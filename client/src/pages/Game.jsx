@@ -208,6 +208,7 @@ export default function Game() {
     }
   }, [roomId])
 
+  const [scoreboardOpen, setScoreboardOpen] = useState(true)
   const me = useMemo(() => room?.players?.find((p) => p.id === player?.id), [room, player?.id])
   const isMyTurn = room?.status === 'playing' && room?.currentTurn === player?.id
 
@@ -296,8 +297,17 @@ export default function Game() {
           </div>
 
           <div className="mt-4 rounded-2xl border border-white/5 bg-slate-900/70 p-4">
-            <div className="text-sm uppercase tracking-widest text-slate-500">Scoreboard</div>
-            <div className="mt-3 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm uppercase tracking-widest text-slate-500">Scoreboard</div>
+              <button
+                type="button"
+                onClick={() => setScoreboardOpen((open) => !open)}
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[.04] px-3 py-2 text-xs font-semibold uppercase tracking-widest text-slate-300 hover:bg-white/[.08] lg:hidden"
+              >
+                {scoreboardOpen ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            <div className={`${scoreboardOpen ? 'block' : 'hidden'} lg:block mt-3 space-y-3`}>
               {sortedPlayers.map((playerData) => (
                 <div key={playerData.id} className="flex items-center justify-between rounded-2xl bg-white/5 p-3">
                   <div>

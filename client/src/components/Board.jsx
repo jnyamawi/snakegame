@@ -183,7 +183,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
   }
 
   return (
-    <div ref={containerRef} className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto">
+    <div ref={containerRef} className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto aspect-square max-h-[calc(100vh-20rem)] lg:max-h-none">
       <div className="pointer-events-none absolute inset-0 z-0">
         <svg viewBox={`0 0 ${size.width || 109} ${size.height || 109}`} className="h-full w-full">
           {
