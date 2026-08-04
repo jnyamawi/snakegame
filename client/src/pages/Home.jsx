@@ -140,7 +140,7 @@ export default function Home() {
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
               Create a private room, choose how many friends can join,
-              share the room code with your friendsand battle your way to square 100.
+              share the room code with your friends and battle your way to square 100.
             </p>
 
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
