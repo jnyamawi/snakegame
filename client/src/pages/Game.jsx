@@ -250,7 +250,7 @@ export default function Game() {
 
           <Board players={room.players} animatedPositions={animatedPositions} />
 
-          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-3 backdrop-blur-xl shadow-2xl">
+          <div className="mobile-controls lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-3 backdrop-blur-xl shadow-2xl">
             <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className={`min-w-0 rounded-2xl px-3 py-2 text-sm font-semibold ${room.status === 'finished' ? 'bg-amber-500/15 text-amber-200' : isMyTurn ? 'bg-indigo-500/15 text-indigo-100' : 'bg-white/[.04] text-slate-400'}`}>

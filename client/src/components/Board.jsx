@@ -79,14 +79,25 @@ export default function Board({ players = [], animatedPositions = {} }) {
   }))
   const containerRef = useRef(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
+  const [side, setSide] = useState(null)
   const gridRef = useRef(null)
   const [cellCenters, setCellCenters] = useState({})
 
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
+    const computeSide = (rect) => {
+      const mobileControls = document.querySelector('.mobile-controls')
+      const mobileH = mobileControls ? mobileControls.getBoundingClientRect().height : 0
+      const availableHeight = Math.max(0, window.innerHeight - rect.top - mobileH - 16)
+      const target = Math.floor(Math.min(rect.width, availableHeight))
+      return target
+    }
+
     const ro = new ResizeObserver(() => {
       const rect = el.getBoundingClientRect()
+      const computedSide = computeSide(rect)
+      setSide(computedSide)
       setSize({ width: Math.max(0, rect.width), height: Math.max(0, rect.height) })
       // recompute cell centers when resize happens
       if (gridRef.current) {
@@ -109,7 +120,15 @@ export default function Board({ players = [], animatedPositions = {} }) {
     })
     ro.observe(el)
     const rect = el.getBoundingClientRect()
+    setSide(computeSide(rect))
     setSize({ width: Math.max(0, rect.width), height: Math.max(0, rect.height) })
+
+    const onResize = () => {
+      if (!containerRef.current) return
+      const r = containerRef.current.getBoundingClientRect()
+      setSide(computeSide(r))
+    }
+    window.addEventListener('resize', onResize)
     if (gridRef.current) {
       const children = Array.from(gridRef.current.children)
       const containerRect = el.getBoundingClientRect()
@@ -127,7 +146,10 @@ export default function Board({ players = [], animatedPositions = {} }) {
       })
       setCellCenters(centers)
     }
-    return () => ro.disconnect()
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
   }, [containerRef])
   for (let row = 9; row >= 0; row--) {
     for (let col = 0; col < 10; col++) {
@@ -187,8 +209,8 @@ export default function Board({ players = [], animatedPositions = {} }) {
       ref={containerRef}
       className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
       style={{
-        width: 'min(100%, calc(100vh - 22rem))',
-        height: 'min(100vw, calc(100vh - 22rem))',
+        width: side ? `${side}px` : 'min(100%, calc(100vh - 22rem))',
+        height: side ? `${side}px` : 'min(100vw, calc(100vh - 22rem))',
         maxWidth: '780px',
         paddingBottom: '1rem',
       }}
