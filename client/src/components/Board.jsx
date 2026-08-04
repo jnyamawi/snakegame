@@ -56,7 +56,7 @@ function ladderRails(start, end, unitScale = 1) {
   const dx = end.x - start.x
   const dy = end.y - start.y
   const length = Math.hypot(dx, dy) || 1
-  const offset = 1.8 * unitScale
+  const offset = 2.6 * unitScale
   const ux = dx / length
   const uy = dy / length
   const px = -uy * offset
@@ -182,12 +182,10 @@ export default function Board({ players = [], animatedPositions = {} }) {
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
+      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto aspect-square"
       style={{
-        width: 'min(100%, calc(100vh - 18rem))',
-        height: 'min(100vw, calc(100vh - 18rem))',
-        maxWidth: '780px',
         boxSizing: 'border-box',
+        maxHeight: 'calc(100vh - 18rem)',
       }}
     >
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -195,26 +193,26 @@ export default function Board({ players = [], animatedPositions = {} }) {
           {snakePaths.map(({ start, end }) => {
             const source = cellCenters[start] ?? squareCenter(start, size)
             const target = cellCenters[end] ?? squareCenter(end, size)
-            const controlOffset = 18
+            const controlOffset = Math.max(24, (size.width || 180) / 18)
             return (
-              <g key={`snake-${start}`} opacity="0.5">
+              <g key={`snake-${start}`} opacity="0.85">
                 <path
                   d={`M ${source.x} ${source.y} C ${source.x} ${source.y + controlOffset} ${target.x} ${target.y - controlOffset} ${target.x} ${target.y}`}
                   stroke="#fb7185"
-                  strokeWidth="6"
+                  strokeWidth="10"
                   fill="none"
                   strokeLinecap="round"
-                  opacity="0.18"
+                  opacity="0.14"
                 />
                 <path
                   d={`M ${source.x} ${source.y} C ${source.x} ${source.y + controlOffset} ${target.x} ${target.y - controlOffset} ${target.x} ${target.y}`}
                   stroke="#fb7185"
-                  strokeWidth="1.8"
+                  strokeWidth="3.4"
                   fill="none"
                   strokeLinecap="round"
                 />
-                <circle cx={source.x} cy={source.y} r="1.8" fill="#fb7185" />
-                <circle cx={target.x} cy={target.y} r="1" fill="#fb7185" />
+                <circle cx={source.x} cy={source.y} r="3" fill="#fb7185" />
+                <circle cx={target.x} cy={target.y} r="1.8" fill="#fb7185" />
               </g>
             )
           })}
@@ -224,14 +222,14 @@ export default function Board({ players = [], animatedPositions = {} }) {
             const target = cellCenters[end] ?? squareCenter(end, size)
             const rails = ladderRails(source, target)
             return (
-              <g key={`ladder-${start}`} opacity="0.75">
+              <g key={`ladder-${start}`} opacity="0.95">
                 <line
                   x1={rails.left.x1}
                   y1={rails.left.y1}
                   x2={rails.left.x2}
                   y2={rails.left.y2}
                   stroke="#34d399"
-                  strokeWidth="1.4"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                 />
                 <line
@@ -240,15 +238,15 @@ export default function Board({ players = [], animatedPositions = {} }) {
                   x2={rails.right.x2}
                   y2={rails.right.y2}
                   stroke="#34d399"
-                  strokeWidth="1.4"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                 />
                 {Array.from({ length: rails.rungCount }).map((_, index) => {
                   const t = (index + 1) / (rails.rungCount + 1)
-                  const x = source.x + rails.vector.x * 14 * t
-                  const y = source.y + rails.vector.y * 14 * t
-                  const rx = -rails.vector.y * 2.8
-                  const ry = rails.vector.x * 2.8
+                  const x = source.x + rails.vector.x * 16 * t
+                  const y = source.y + rails.vector.y * 16 * t
+                  const rx = -rails.vector.y * 3.4
+                  const ry = rails.vector.x * 3.4
                   return (
                     <line
                       key={index}
@@ -257,13 +255,13 @@ export default function Board({ players = [], animatedPositions = {} }) {
                       x2={x + rx}
                       y2={y + ry}
                       stroke="#34d399"
-                      strokeWidth="1.1"
+                      strokeWidth="1.6"
                       strokeLinecap="round"
                     />
                   )
                 })}
-                <circle cx={source.x} cy={source.y} r="1.8" fill="#34d399" />
-                <circle cx={target.x} cy={target.y} r="1" fill="#34d399" />
+                <circle cx={source.x} cy={source.y} r="2.4" fill="#34d399" />
+                <circle cx={target.x} cy={target.y} r="1.6" fill="#34d399" />
               </g>
             )
           })}
