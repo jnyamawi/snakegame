@@ -83,6 +83,7 @@ export default function Board({ players = [], animatedPositions = {} }) {
   const gridRef = useRef(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [cellCenters, setCellCenters] = useState({})
+  const boardReady = Object.keys(cellCenters).length === 100
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -187,22 +188,40 @@ export default function Board({ players = [], animatedPositions = {} }) {
     }
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className="relative overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
-      style={{
-        width: 'min(100%, 780px)',
-        maxHeight: 'calc(100vh - 14rem)',
-        maxWidth: '780px',
-        boxSizing: 'border-box',
-      }}
+   return (
+    <div className="w-full flex justify-center px-2 sm:px-4">
+        <div
+            ref={containerRef}
+            className="
+                relative
+                w-full
+                max-w-[820px]
+                aspect-square
+                rounded-2xl
+                overflow-hidden
+                border
+                border-white/10
+                bg-slate-950/80
+                shadow-2xl
+                select-none
+                touch-none
+                mx-auto
+            "
+        >
+      <div className="absolute inset-0 pointer-events-none z-0">
+    <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox={`0 0 ${size.width || 100} ${size.height || 100}`}
+        preserveAspectRatio="none"
     >
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <svg viewBox={`0 0 ${size.width || 109} ${size.height || 109}`} className="h-full w-full">
+      {boardReady && (
+        <>
+
           {snakePaths.map(({ start, end }) => {
-            const source = cellCenters[start] ?? squareCenter(start, size)
-            const target = cellCenters[end] ?? squareCenter(end, size)
+           const source = cellCenters[start]
+const target = cellCenters[end]
+
+if (!source || !target) return null
             return (
               <g key={`snake-${start}`} opacity="0.95">
                 <path
@@ -227,8 +246,10 @@ export default function Board({ players = [], animatedPositions = {} }) {
           })}
 
           {ladderPaths.map(({ start, end }) => {
-            const source = cellCenters[start] ?? squareCenter(start, size)
-            const target = cellCenters[end] ?? squareCenter(end, size)
+            const source = cellCenters[start]
+const target = cellCenters[end]
+
+if (!source || !target) return null
             const rails = ladderRails(source, target)
             return (
               <g key={`ladder-${start}`} opacity="0.98">
@@ -252,8 +273,10 @@ export default function Board({ players = [], animatedPositions = {} }) {
                 />
                 {Array.from({ length: rails.rungCount }).map((_, index) => {
                   const t = (index + 1) / (rails.rungCount + 1)
-                  const x = source.x + rails.vector.x * ladderRungSpacing * t
-                  const y = source.y + rails.vector.y * ladderRungSpacing * t
+                  const distance = rails.length * t
+
+const x = source.x + rails.vector.x * distance
+const y = source.y + rails.vector.y * distance
                   const rx = -rails.vector.y * (ladderRungStroke * 2.1)
                   const ry = rails.vector.x * (ladderRungStroke * 2.1)
                   return (
@@ -274,12 +297,28 @@ export default function Board({ players = [], animatedPositions = {} }) {
               </g>
             )
           })}
-        </svg>
+      
+    </>
+      )}
+    </svg>
       </div>
 
-      <div ref={gridRef} className="grid grid-cols-10 gap-px relative z-10">
+      <div
+    ref={gridRef}
+    className="
+        absolute
+        inset-0
+        grid
+        grid-cols-10
+        grid-rows-10
+        gap-px
+        z-10
+    "
+>
+
         {cells}
       </div>
+    </div>
     </div>
   )
 }
