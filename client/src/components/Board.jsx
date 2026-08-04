@@ -182,13 +182,13 @@ export default function Board({ players = [], animatedPositions = {} }) {
               <span className="font-black text-emerald-100">L</span>
               <span className="mx-1 text-emerald-300">→</span>
               <span className="text-emerald-100">{ladder}</span>
-            </div>
-          )}
-
+                <div
+                  key={number}
+                  className={`relative aspect-square border border-white/10 p-0.5 ${
           <div className="flex h-full items-center justify-center gap-0.5 pt-2">
             {occupants.map((player, i) => {
               const playerIndex = players.findIndex((p) => p.id === player.id)
-              return (
+                <span className="absolute left-1 top-1 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-black text-slate-100 shadow-black/40 sm:text-[12px]">
                 <div
                   key={player.id}
                   title={player.name}
@@ -209,18 +209,18 @@ export default function Board({ players = [], animatedPositions = {} }) {
       ref={containerRef}
       className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
       style={{
-        width: side ? `${side}px` : 'min(100%, calc(100vh - 22rem))',
-        height: side ? `${side}px` : 'min(100vw, calc(100vh - 22rem))',
-        maxWidth: '780px',
-        paddingBottom: '1rem',
-      }}
-    >
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <svg viewBox={`0 0 ${size.width || 109} ${size.height || 109}`} className="h-full w-full">
-          {
-            (() => {
-              const gap = 1
-              const totalGapX = gap * 9
+                  {occupants.map((player, i) => {
+                    const playerIndex = players.findIndex((p) => p.id === player.id)
+                    return (
+                      <div
+                        key={player.id}
+                        title={player.name}
+                        className={`token-pop grid h-6 w-6 place-items-center rounded-full ${tokenStyles[playerIndex % tokenStyles.length]} text-[9px] font-black text-slate-950 ring-2 sm:h-7 sm:w-7`}
+                      >
+                        {playerIndex + 1}
+                      </div>
+                    )
+                  })}
               const totalGapY = gap * 9
               const cellW = (size.width - totalGapX) / 10 || 11
               const cellH = (size.height - totalGapY) / 10 || 11
