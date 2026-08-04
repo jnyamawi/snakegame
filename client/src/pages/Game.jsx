@@ -26,7 +26,7 @@ const SNAKES = {
   62: 19,
   54: 34,
   36: 17,
-  28: 10,
+  32: 10,
 }
 
 const LADDERS = {
