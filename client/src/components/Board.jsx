@@ -187,9 +187,10 @@ export default function Board({ players = [], animatedPositions = {} }) {
       ref={containerRef}
       className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
       style={{
-        width: 'min(100%, calc(100vh - 18rem))',
-        height: 'min(100vw, calc(100vh - 18rem))',
+        width: 'min(100%, calc(100vh - 22rem))',
+        height: 'min(100vw, calc(100vh - 22rem))',
         maxWidth: '780px',
+        paddingBottom: '1rem',
       }}
     >
       <div className="pointer-events-none absolute inset-0 z-0">
