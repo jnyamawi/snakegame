@@ -182,10 +182,13 @@ export default function Board({ players = [], animatedPositions = {} }) {
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto aspect-square"
+      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl w-full max-w-[780px] mx-auto"
       style={{
+        width: 'min(100%, calc(100vh - 18rem))',
+        height: 'min(100vw, calc(100vh - 18rem))',
+        maxWidth: '780px',
+        maxHeight: '780px',
         boxSizing: 'border-box',
-        maxHeight: 'calc(100vh - 18rem)',
       }}
     >
       <div className="pointer-events-none absolute inset-0 z-0">
