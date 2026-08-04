@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LogOut, RotateCcw, Trophy, Wifi, WifiOff } from 'lucide-react'
+import { Dices, LogOut, RotateCcw, Trophy, Wifi, WifiOff } from 'lucide-react'
 import RoomHeader from '../components/RoomHeader'
 import Board from '../components/Board'
 import Dice from '../components/Dice'
@@ -250,36 +250,42 @@ export default function Game() {
 
           <Board players={room.players} animatedPositions={animatedPositions} />
 
-          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-4 backdrop-blur-xl shadow-2xl">
-            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-              <div className={`rounded-2xl p-4 text-center ${room.status === 'finished' ? 'bg-amber-500/15 ring-1 ring-amber-400/20' : isMyTurn ? 'bg-indigo-500/15 ring-1 ring-indigo-400/20' : 'bg-white/[.03]'}`}>
-                <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                  {room.status === 'finished' ? 'Game over' : isMyTurn ? 'Your turn' : 'Waiting'}
+          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/95 p-3 backdrop-blur-xl shadow-2xl">
+            <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className={`min-w-0 rounded-2xl px-3 py-2 text-sm font-semibold ${room.status === 'finished' ? 'bg-amber-500/15 text-amber-200' : isMyTurn ? 'bg-indigo-500/15 text-indigo-100' : 'bg-white/[.04] text-slate-400'}`}>
+                  <div className="truncate uppercase tracking-widest text-[10px] text-slate-500">
+                    {room.status === 'finished' ? 'Game over' : isMyTurn ? 'Your turn' : 'Waiting'}
+                  </div>
+                  <div className="mt-1 text-sm font-black leading-tight text-white">
+                    {room.status === 'finished'
+                      ? `🏆 ${winner?.name ?? 'Player'} wins!`
+                      : isMyTurn
+                        ? 'Roll the dice!'
+                        : `${room.players.find((p) => p.id === room.currentTurn)?.name}'s turn`}
+                  </div>
                 </div>
-                <div className="mt-1 text-xl font-black">
-                  {room.status === 'finished'
-                    ? `🏆 ${winner?.name ?? 'Player'} wins!`
-                    : isMyTurn
-                      ? 'Roll the dice!'
-                      : `${room.players.find((p) => p.id === room.currentTurn)?.name}'s turn`}
-                </div>
-              </div>
-              {room.status !== 'finished' ? (
-                <div className="mt-6">
-                  <Dice value={dice} disabled={!isMyTurn || !connected} onRoll={roll} />
-                </div>
-              ) : (
-                <div className="mt-6 grid gap-3">
+                {room.status !== 'finished' ? (
+                  <button
+                    type="button"
+                    onClick={roll}
+                    disabled={!isMyTurn || !connected}
+                    className="inline-flex h-14 min-w-[4.5rem] items-center justify-center gap-2 rounded-2xl bg-indigo-500 px-4 text-sm font-black text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-slate-700"
+                  >
+                    <Dices className="h-5 w-5" />
+                    <span className="hidden sm:inline">Roll</span>
+                  </button>
+                ) : (
                   <button
                     type="button"
                     onClick={rematch}
-                    className="rounded-2xl bg-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/20"
+                    className="inline-flex h-14 min-w-[4.5rem] items-center justify-center rounded-2xl bg-indigo-500 px-4 text-sm font-black text-white transition hover:bg-indigo-400"
                   >
                     Rematch
                   </button>
-                </div>
-              )}
-              {notice && <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-3 text-center text-sm font-semibold text-amber-200">{notice}</div>}
+                )}
+              </div>
+              {notice && <div className="mt-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-center text-xs font-semibold text-amber-200 line-clamp-2">{notice}</div>}
             </div>
           </div>
 
