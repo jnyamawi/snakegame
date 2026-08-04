@@ -103,8 +103,6 @@ function ladderRails(
   const px = -uy * offset
   const py = ux * offset
 
-  // compute rungCount in original "units"
-  // so behavior matches regardless of pixel scale
   const lengthUnits =
     length / (unitScale || 1)
 
@@ -182,9 +180,6 @@ export default function Board({
       height: 0,
     })
 
-  const [side, setSide] =
-    useState(null)
-
   const [cellCenters, setCellCenters] =
     useState({})
 
@@ -196,161 +191,124 @@ export default function Board({
     const el =
       containerRef.current
 
-    const computeSide = (rect) => {
-      const mobileControls =
-        document.querySelector(
-          '.mobile-controls'
-        )
-
-      const mobileH =
-        mobileControls
-          ? mobileControls
-              .getBoundingClientRect()
-              .height
-          : 0
-
-      const availableHeight =
-        Math.max(
-          0,
-          window.innerHeight -
-            rect.top -
-            mobileH -
-            12
-        )
-
-      return Math.floor(
-        Math.min(
-          rect.width,
-          availableHeight
-        )
-      )
-    }
-
-    const ro =
-      new ResizeObserver(() => {
-        const rect =
-          el.getBoundingClientRect()
-
-        setSize({
-          width: Math.max(
-            0,
-            rect.width
-          ),
-          height: Math.max(
-            0,
-            rect.height
-          ),
-        })
-
-        setSide(
-          computeSide(rect)
-        )
-
-        if (gridRef.current) {
-          const children =
-            Array.from(
-              gridRef.current.children
-            )
-
-          const containerRect =
-            el.getBoundingClientRect()
-
-          const centers = {}
-
-          children.forEach(
-            (child, idx) => {
-              const r =
-                child.getBoundingClientRect()
-
-              const left =
-                r.left -
-                containerRect.left
-
-              const top =
-                r.top -
-                containerRect.top
-
-              const cx =
-                left + r.width / 2
-
-              const cy =
-                top + r.height / 2
-
-              const row =
-                9 -
-                Math.floor(
-                  idx / 10
-                )
-
-              const col =
-                idx % 10
-
-              const number =
-                displayNumber(
-                  row,
-                  col
-                )
-
-              centers[number] = {
-                x: cx,
-                y: cy,
-                w: r.width,
-                h: r.height,
-              }
-            }
-          )
-
-          setCellCenters(
-            centers
-          )
-        }
-      })
-
-    ro.observe(el)
-
-    const rect =
-      el.getBoundingClientRect()
-
-    setSize({
-      width: Math.max(
-        0,
-        rect.width
-      ),
-      height: Math.max(
-        0,
-        rect.height
-      ),
-    })
-
-    setSide(
-      computeSide(rect)
-    )
-
-    const onResize = () => {
+    const updateMeasurements = () => {
       if (!containerRef.current) {
         return
       }
 
-      const r =
+      const rect =
+        containerRef.current.getBoundingClientRect()
+
+      const width =
+        Math.max(
+          0,
+          rect.width
+        )
+
+      const height =
+        Math.max(
+          0,
+          rect.height
+        )
+
+      setSize({
+        width,
+        height,
+      })
+
+      if (!gridRef.current) {
+        return
+      }
+
+      const children =
+        Array.from(
+          gridRef.current.children
+        )
+
+      const containerRect =
         containerRef.current
           .getBoundingClientRect()
 
-      setSide(
-        computeSide(r)
+      const centers = {}
+
+      children.forEach(
+        (child, idx) => {
+          const r =
+            child.getBoundingClientRect()
+
+          const left =
+            r.left -
+            containerRect.left
+
+          const top =
+            r.top -
+            containerRect.top
+
+          const cx =
+            left + r.width / 2
+
+          const cy =
+            top + r.height / 2
+
+          const row =
+            9 -
+            Math.floor(
+              idx / 10
+            )
+
+          const col =
+            idx % 10
+
+          const number =
+            displayNumber(
+              row,
+              col
+            )
+
+          centers[number] = {
+            x: cx,
+            y: cy,
+            w: r.width,
+            h: r.height,
+          }
+        }
+      )
+
+      setCellCenters(
+        centers
       )
     }
 
+    updateMeasurements()
+
+    const resizeObserver =
+      new ResizeObserver(() => {
+        updateMeasurements()
+      })
+
+    resizeObserver.observe(el)
+
     window.addEventListener(
       'resize',
-      onResize
+      updateMeasurements
+    )
+
+    window.addEventListener(
+      'orientationchange',
+      updateMeasurements
     )
 
     return () => {
-      ro.disconnect()
+      resizeObserver.disconnect()
 
       window.removeEventListener(
         'resize',
-        onResize
+        updateMeasurements
+      )
+
+      window.removeEventListener(
+        'orientationchange',
+        updateMeasurements
       )
     }
   }, [])
@@ -391,13 +349,21 @@ export default function Board({
       cells.push(
         <div
           key={number}
-          className={`relative aspect-square border border-white/10 p-0.5 ${
-            number % 2 === 0
-              ? 'bg-white/[.045]'
-              : 'bg-white/[.025]'
-          }`}
+          className={`
+            relative
+            aspect-square
+            border
+            border-white/10
+            p-0.5
+            ${
+              number % 2 === 0
+                ? 'bg-white/[.045]'
+                : 'bg-white/[.025]'
+            }
+          `}
         >
           {/* NUMBER */}
+
           <span
             className="
               absolute
@@ -418,6 +384,7 @@ export default function Board({
           </span>
 
           {/* SNAKE INDICATOR */}
+
           {snake && (
             <div
               className="
@@ -432,8 +399,8 @@ export default function Board({
                 px-1
                 py-0.5
                 text-[7px]
-                font-semibold
                 leading-none
+                font-semibold
                 text-rose-200
                 shadow-sm
                 ring-1
@@ -459,6 +426,7 @@ export default function Board({
           )}
 
           {/* LADDER INDICATOR */}
+
           {ladder && (
             <div
               className="
@@ -473,8 +441,8 @@ export default function Board({
                 px-1
                 py-0.5
                 text-[7px]
-                font-semibold
                 leading-none
+                font-semibold
                 text-emerald-200
                 shadow-sm
                 ring-1
@@ -500,6 +468,7 @@ export default function Board({
           )}
 
           {/* PLAYER TOKENS */}
+
           <div
             className="
               flex
@@ -575,21 +544,24 @@ export default function Board({
         shadow-2xl
       "
       style={{
-        width: side
-          ? `${side}px`
-          : 'min(100%, calc(100vh - 22rem))',
-
-        height: side
-          ? `${side}px`
-          : 'min(100vw, calc(100vh - 22rem))',
-
+        /*
+         * IMPORTANT MOBILE FIX
+         *
+         * The old version used the viewport height
+         * to calculate the board size.
+         *
+         * That could make the board larger than the
+         * available mobile layout and cause the bottom
+         * rows to disappear.
+         *
+         * The board is now always based on WIDTH and
+         * kept perfectly square.
+         */
+        width: '100%',
         maxWidth: '780px',
-
-        paddingBottom:
-          '0.5rem',
-
-        boxSizing:
-          'border-box',
+        aspectRatio: '1 / 1',
+        height: 'auto',
+        boxSizing: 'border-box',
       }}
     >
       {/* ========================================================
@@ -625,13 +597,17 @@ export default function Board({
               gap * 9
 
             const cellW =
-              (size.width -
-                totalGapX) /
+              (
+                size.width -
+                totalGapX
+              ) /
                 10 || 11
 
             const cellH =
-              (size.height -
-                totalGapY) /
+              (
+                size.height -
+                totalGapY
+              ) /
                 10 || 11
 
             const cell =
@@ -701,20 +677,14 @@ export default function Board({
                                 controlOffset
                               }
 
-                            ${
-                              target.x
-                            }
+                            ${target.x}
                               ${
                                 target.y -
                                 controlOffset
                               }
 
-                            ${
-                              target.x
-                            }
-                              ${
-                                target.y
-                              }
+                            ${target.x}
+                              ${target.y}
                           `}
                           stroke="#fb7185"
                           strokeWidth="6"
@@ -735,20 +705,14 @@ export default function Board({
                                 controlOffset
                               }
 
-                            ${
-                              target.x
-                            }
+                            ${target.x}
                               ${
                                 target.y -
                                 controlOffset
                               }
 
-                            ${
-                              target.x
-                            }
-                              ${
-                                target.y
-                              }
+                            ${target.x}
+                              ${target.y}
                           `}
                           stroke="#fb7185"
                           strokeWidth="1.8"
@@ -784,7 +748,6 @@ export default function Board({
 
                 {/* ==================================================
                     LADDERS
-                    ORIGINAL LADDER IMPLEMENTATION PRESERVED
                     ================================================== */}
 
                 {ladderPaths.map(
@@ -811,8 +774,10 @@ export default function Board({
                       )
 
                     const localCellW =
-                      (size.width -
-                        1 * 9) /
+                      (
+                        size.width -
+                        1 * 9
+                      ) /
                         10 || 11
 
                     const unitScaleLocal =
@@ -998,6 +963,8 @@ export default function Board({
           grid
           grid-cols-10
           gap-px
+          w-full
+          h-full
         "
       >
         {cells}
