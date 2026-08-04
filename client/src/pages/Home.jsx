@@ -142,7 +142,6 @@ export default function Home() {
               Create a private room, choose how many friends can join,
               share the room code with your friends and battle your way to square 100.
             </p>
-
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
               {[
                 ['2–4', 'Players'],
